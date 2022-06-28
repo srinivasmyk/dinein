@@ -8,11 +8,12 @@ import { Recipe } from "./recipe.model";
 export class RecipeService{
 recipeUpdated= new Subject<Recipe[]>();
 
-  private recipes: Recipe[]=[
-    new Recipe("Atest recipe",'this is a test', 'https://previews.123rf.com/images/enterline/enterline1712/enterline171200450/92392058-the-word-recipe-concept-and-theme-painted-in-black-ink-on-a-watercolor-wash-background-.jpg?fj=1',[new Ingredient('French Fries',20)]),
-    new Recipe("Atest recipe2",'cook', 'https://previews.123rf.com/images/enterline/enterline1712/enterline171200450/92392058-the-word-recipe-concept-and-theme-painted-in-black-ink-on-a-watercolor-wash-background-.jpg?fj=1',[new Ingredient('French Fries',20)])
-  ];
+  // private recipes: Recipe[]=[
+  //   new Recipe("Atest recipe",'this is a test', 'https://previews.123rf.com/images/enterline/enterline1712/enterline171200450/92392058-the-word-recipe-concept-and-theme-painted-in-black-ink-on-a-watercolor-wash-background-.jpg?fj=1',[new Ingredient('French Fries',20)]),
+  //   new Recipe("Atest recipe2",'cook', 'https://previews.123rf.com/images/enterline/enterline1712/enterline171200450/92392058-the-word-recipe-concept-and-theme-painted-in-black-ink-on-a-watercolor-wash-background-.jpg?fj=1',[new Ingredient('French Fries',20)])
+  // ];
 
+  private recipes:Recipe[]=[];
   constructor(private slService: ShoppingListService){
 
   }
@@ -40,6 +41,12 @@ this.recipeUpdated.next(this.recipes.slice());
   deleteRecipe(index:number){
     this.recipes.splice(index,1);
     this.recipeUpdated.next(this.recipes.slice());
+  }
+
+  setRecipes(recipes:Recipe[]){
+    this.recipes=recipes;
+    this.recipeUpdated.next(this.recipes.slice());
+
   }
 
 }
