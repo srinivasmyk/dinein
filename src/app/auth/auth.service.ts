@@ -1,7 +1,9 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { nullSafeIsEquivalent } from "@angular/compiler/src/output/output_ast";
 import { Injectable } from "@angular/core";
-import { throwError } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { BehaviorSubject, Subject, throwError } from "rxjs";
+import { catchError, tap } from "rxjs/operators";
+import { User } from "./user.model";
 
 
 export interface AuthResponseData{
@@ -17,6 +19,8 @@ export interface AuthResponseData{
 
 @Injectable({providedIn:'root'})
 export class AuthService{
+  p:string="";
+user=new BehaviorSubject<User>(null);
 
   constructor(private http:HttpClient){}
 
@@ -25,17 +29,8 @@ return this.http.post<AuthResponseData>('https://identitytoolkit.googleapis.com/
   email: email,
   password:password,
   returnSecureToken:true
-}).pipe(catchError(errorRes => {
-  let errorMessage="Unknown error occured!!!!!";
-  if(!errorRes.error || !errorRes.error.error){
-    return throwError(errorMessage);
-  }else{
-
-  switch(errorRes.error.error.message){
-    case 'EMAIL_EXISTS':
-      errorMessage="The email address is already in use by another account.";
-  }}
-return throwError(errorMessage);
+}).pipe(catchError(this.handleError),tap(resData =>{
+this.handleAuthentication(resData.email,resData.localId,resData.idToken,+resData.expiresIn)
 }));
   }
 
@@ -44,6 +39,36 @@ return throwError(errorMessage);
       email: email,
       password:password,
       returnSecureToken:true
-    })
+    }).pipe(catchError(this.handleError),tap(resData =>{
+      this.handleAuthentication(resData.email,resData.localId,resData.idToken,+resData.expiresIn)
+      }));
+  }
+
+  private handleError(errorRes:HttpErrorResponse){
+    let errorMessage="Unknown error occured!!!!!";
+    if(!errorRes.error || !errorRes.error.error){
+      return throwError(errorMessage);
+    }else{
+
+    switch(errorRes.error.error.message){
+      case 'EMAIL_EXISTS':
+        errorMessage="The email address is already in use by another account.";
+        break;
+        case 'EMAIL_NOT_FOUND':
+          errorMessage="There is no user record corresponding to this identifier."
+          break;
+          case 'INVALID_PASSWORD':
+            errorMessage="The password is invalid or the user does not have a password."
+            break;
+    }}
+  return throwError(errorMessage);
+  }
+
+  private handleAuthentication(email:string,userId:string,token:string,expiresIn:number){
+    const expirationDate=new Date(new Date().getTime()+ expiresIn*1000);
+    const user = new User(email,userId,expirationDate,token);
+    this.user.next(user);
+
+
   }
 }
