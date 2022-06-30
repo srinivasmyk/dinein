@@ -14,6 +14,9 @@ export class AuthComponent{
   isLoading=false;
   error:string="";
 
+
+
+
   constructor(private authServ:AuthService, private router:Router){}
   onSwithMode(){
 
@@ -39,6 +42,25 @@ let authObs:Observable<AuthResponseData>;
       console.log(resData);
     this.isLoading=false;
     this.router.navigate(['./recipes']);
+    //passing user and account objects:
+aptrinsic("identify",
+{
+//User Fields
+  "id": "unique-user-id", // Required for logged in app users
+  "email": "userEmail@address.com",
+  "firstName": "John",
+  "lastName": "Smith",
+  "signUpDate": 1522697426479, //unix time in ms
+  "plan" : "gold", //Custom attributes - please create those custom attributes in Aptrinsic via Account Settings to be tracked.
+  "price" : 95.5,
+  "userHash": "" // optional transient for HMAC identification
+},
+{
+//Account Fields
+  "id":"IBM", //Required
+  "name":"International Business Machine",
+  "Program": "Platinum" // flat custom attributes
+});
 
     },errorRes =>{
       console.log(errorRes);
@@ -50,3 +72,17 @@ let authObs:Observable<AuthResponseData>;
     form.reset();
   }
 }
+function aptrinsic(arg0: string, arg1: {
+  //User Fields
+  id: string; // Required for logged in app users
+  email: string; firstName: string; lastName: string; signUpDate: number; //unix time in ms
+  plan: string; //Custom attributes - please create those custom attributes in Aptrinsic via Account Settings to be tracked.
+  price: number; userHash: string; // optional transient for HMAC identification
+}, arg2: {
+  //Account Fields
+  id: string; //Required
+  name: string; Program: string; // flat custom attributes
+}) {
+  throw new Error("Function not implemented.");
+}
+
