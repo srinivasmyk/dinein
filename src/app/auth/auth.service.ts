@@ -3,8 +3,8 @@ import { nullSafeIsEquivalent } from "@angular/compiler/src/output/output_ast";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Subject, throwError } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
+import { environment } from "src/environments/environment";
 import { User } from "./user.model";
-
 
 export interface AuthResponseData{
   kind:string;
@@ -25,7 +25,7 @@ user=new BehaviorSubject<User>(null);
   constructor(private http:HttpClient){}
 
   signup(email:string,password:string){
-return this.http.post<AuthResponseData>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBGRgDUydp3d2-i0xee8FudcCaS6-ErOUk',{
+return this.http.post<AuthResponseData>('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+environment.firbaseApiKey,{
   email: email,
   password:password,
   returnSecureToken:true
@@ -35,7 +35,7 @@ this.handleAuthentication(resData.email,resData.localId,resData.idToken,+resData
   }
 
   login(email:string,password:string){
-   return this.http.post<AuthResponseData>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBGRgDUydp3d2-i0xee8FudcCaS6-ErOUk',{
+   return this.http.post<AuthResponseData>('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+environment.firbaseApiKey,{
       email: email,
       password:password,
       returnSecureToken:true
